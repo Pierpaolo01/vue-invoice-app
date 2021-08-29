@@ -2,7 +2,7 @@
   <header class="flex">
     <div class="branding flex">
       <img
-        src="@/assets/file-invoice-dollar-solid.png"
+        src="../assets/file-invoice-dollar-solid.png"
         alt="dollar-solid-icon"
       />
     </div>

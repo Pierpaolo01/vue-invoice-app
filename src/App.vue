@@ -2,7 +2,10 @@
   <div>
     <div class="app flex flex-column">
       <the-navigation />
-      <div class="app-conent flex flex-column">
+      <div class="app-content flex flex-column">
+        <transition name="invoice">
+          <InvoiceModal v-if="invoiceModal" />
+        </transition>
         <router-view />
       </div>
     </div>
@@ -10,39 +13,56 @@
 </template>
 
 <script>
-import TheNavigation from './components/TheNavigation.vue';
+import { mapState } from "vuex";
+import TheNavigation from "./components/TheNavigation.vue";
+import InvoiceModal from "./components/InvoiceModal.vue";
 
 export default {
   components: {
     TheNavigation,
-  }
-}
+    InvoiceModal,
+  },
+  computed: {
+    ...mapState(["invoiceModal"]),
+  },
+};
 </script>
 
 <style lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+
+
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
-  
 }
 
 .app {
   background-color: #141625;
   min-height: 100vh;
-  @media(min-width: 900px){
+  @media (min-width: 900px) {
     flex-direction: row !important;
-
   }
 
-  .app-content{
+  .app-content {
     padding: 0 20px;
     flex: 1;
     position: relative;
   }
+}
+
+// invoice animation
+.invoice-enter-active,
+.invoice-leave-active{
+  transition: 0.8s ease all;
+}
+
+.invoice-enter-from,
+.invoice-leave-to {
+  transform: translateX(-700px);
 }
 
 button,
