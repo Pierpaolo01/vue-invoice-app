@@ -1,8 +1,9 @@
 <template>
   <div>
     <div class="app flex flex-column">
-      <the-navigation />
+      <TheNavigation />
       <div class="app-content flex flex-column">
+        <ExitDialog v-if="dialogActive" />
         <transition name="invoice">
           <InvoiceModal v-if="invoiceModal" />
         </transition>
@@ -14,16 +15,18 @@
 
 <script>
 import { mapState } from "vuex";
-import TheNavigation from "./components/TheNavigation.vue";
-import InvoiceModal from "./components/InvoiceModal.vue";
+import TheNavigation from "./components/TheNavigation";
+import InvoiceModal from "./components/InvoiceModal";
+import ExitDialog from "./components/ExitDialog";
 
 export default {
   components: {
     TheNavigation,
     InvoiceModal,
+    ExitDialog,
   },
   computed: {
-    ...mapState(["invoiceModal"]),
+    ...mapState(["invoiceModal", "dialogActive"]),
   },
 };
 </script>
@@ -51,6 +54,7 @@ export default {
     padding: 0 20px;
     flex: 1;
     position: relative;
+    
   }
 }
 

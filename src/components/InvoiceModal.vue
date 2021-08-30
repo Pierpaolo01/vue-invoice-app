@@ -6,6 +6,7 @@
   >
     <form @submit.prevent="submitForm" class="">
       <div class="invoice-content">
+        <loading-circle v-if="isLoading"/>
         <h1>New Invoice</h1>
 
         <!-- Bill from section -->
@@ -214,13 +215,20 @@
 </template>
 
 <script>
+import DB from "../firebase/firebaseInnit.js";
 import { mapMutations } from "vuex";
+import { uid } from "uid";
+import LoadingCircle from "./LoadingCircle";
 
 export default {
   name: "InvoiceModal",
+  components: {
+    LoadingCircle,
+  },
   data() {
     return {
       dateOptions: { year: "numeric", month: "short", day: "numeric" },
+      isLoading: false,
       docId: null,
       loading: null,
       billerStreetAddress: null,
@@ -241,25 +249,102 @@ export default {
       productDescription: null,
       invoicePending: null,
       invoiceDraft: null,
-      invoiceItemList: [{ itemName: "stuff", qty: 10, price: 102 }],
+      invoiceItemList: [],
       invoiceTotal: 0,
     };
   },
   methods: {
-    ...mapMutations(["TOGGLE_INVOICE"]),
+    ...mapMutations(["TOGGLE_INVOICE", "TOGGLE_DIALOG"]),
     closeInvoice() {
       this.TOGGLE_INVOICE();
     },
+    checkClick(e){
+      if(e.target === this.$refs.invoiceWrap){
+        this.TOGGLE_DIALOG();
+      }
+    },
+    addNewInvoiceItem() {
+      this.invoiceItemList.push({
+        id: uid(),
+        itemName: "",
+        qty: 0,
+        price: 0,
+      });
+    },
+    deleteInvoiceItem(id) {
+      console.log(id);
+      this.invoiceItemList = this.invoiceItemList.filter(
+        (item) => item.id !== id
+      );
+    },
+    publishInvoice() {
+      this.invoicePending = true;
+    },
+    calcInvoiceTotal() {
+      this.invoiceTotal = 0;
+      this.invoiceItemList.forEach((item) => {
+        this.invoiceTotal += item.total;
+      });
+    },
+    saveDraft() {
+      this.invoiceDraft = true;
+    },
+    async uploadInvoice() {
+            if (this.invoiceItemList.length <= 0) {
+        alert("fill out the invoiced items");
+        return;
+      }
+  
+      this.isLoading = true;
+      this.calcInvoiceTotal();
+
+      const database = DB.collection("invoices").doc();
+
+      await database.set({
+        invoiceId: uid(6),
+        billerStreetAddress: this.billerStreetAddress,
+        billerCity: this.billerCity,
+        billerZipCode: this.billerZipCode,
+        billerCountry: this.billerCountry,
+        clientName: this.clientName,
+        clientEmail: this.clientEmail,
+        clientStreetAddress: this.clientStreetAddress,
+        clientCity: this.clientCity,
+        clientZipCode: this.clientZipCode,
+        clientCountry: this.clientCountry,
+        invoiceDateUnix: this.invoiceDateUnix,
+        invoiceDate: this.invoiceDate,
+        paymentTerms: this.paymentTerms,
+        paymentDueDateUnix: this.paymentDueDateUnix,
+        paymentDueDate: this.paymentDueDate,
+        productDescription: this.productDescription,
+        invoicePending: this.invoicePending,
+        invoiceDraft: this.invoiceDraft,
+        invoiceItemList: this.invoiceItemList,
+        invoiceTotal: this.invoiceTotal,
+      });
+      this.isLoading = false;
+      this.closeInvoice();
+    },
+    submitForm() {
+      this.uploadInvoice();
+    },
+    
   },
   watch: {
-    paymentTerms(){
-      // const futureDate = 
-    }
+    paymentTerms() {
+      const futureDate = new Date();
+      this.paymentDueDateUnix = futureDate.setDate(
+        futureDate.getDate() + parseInt(this.paymentTerms)
+      );
+      this.paymentDueDate = new Date(
+        this.paymentDueDateUnix
+      ).toLocaleDateString("en-us", this.dateOptions);
+    },
   },
   created() {
     //set current date on invoice
-    this.invoiceDate = new Date().toISOString().slice(0, 10);
-    console.log(new Date().getMonth)
+    this.invoiceDate = new Date().toLocaleDateString("en-us", this.dateOptions);
   },
 };
 </script>
@@ -278,6 +363,7 @@ export default {
   }
   @media (min-width: 900px) {
     left: 90px;
+    
   }
   .invoice-content {
     position: relative;
@@ -289,6 +375,10 @@ export default {
     background-attachment: fixed;
     box-shadow: 10px 4px 6px -1px rgba(0, 0, 0, 0.2),
       0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    
+    @media (max-width:900px) {
+      margin-top: 50px;
+    }
     h1 {
       margin-bottom: 48px;
       color: #fff;
