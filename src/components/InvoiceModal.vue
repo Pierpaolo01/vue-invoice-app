@@ -323,6 +323,8 @@ export default {
 
       const database = DB.collection("invoices").doc();
 
+      this.invoiceDraft = true;
+
       await database.set({
         invoiceId: uid(6),
         billerStreetAddress: this.billerStreetAddress,
@@ -351,6 +353,9 @@ export default {
       this.closeInvoice();
       this.GET_INVOICES();
     },
+    // async uploadDraftInvoice(){
+
+    // },
     async updateInvoice() {
       if (this.invoiceItemList.length <= 0) {
         alert("fill out the invoiced items");
