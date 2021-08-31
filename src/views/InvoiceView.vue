@@ -19,12 +19,7 @@
         </div>
       </div>
       <div class="right flex">
-        <button
-          @click="toggleEditInvoice"
-          class="dark-purple"
-        >
-          Edit
-        </button>
+        <button @click="toggleEditInvoice" class="dark-purple">Edit</button>
         <button @click="deleteInvoice(currentInvoice.docId)" class="red">
           Delete
         </button>
@@ -37,7 +32,7 @@
         </button>
         <button
           v-if="currentInvoice.invoiceDraft || currentInvoice.invoicePaid"
-          @click="updateStatusToPending"
+          @click="updateStatusToPending(currentInvoice.docId)"
           class="orange"
         >
           Mark as Pending
@@ -97,13 +92,13 @@
           >
             <p>{{ item.itemName }}</p>
             <p>{{ item.qty }}</p>
-            <p>{{ item.price }}</p>
-            <p>{{ item.total }}</p>
+            <p>${{ item.price }}</p>
+            <p>${{ item.total }}</p>
           </div>
         </div>
         <div class="total flex">
           <p>Amount Due</p>
-          <p>{{ currentInvoice.invoiceTotal }}</p>
+          <p>${{ currentInvoice.invoiceTotal }}</p>
         </div>
       </div>
     </div>
@@ -111,30 +106,57 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 export default {
   name: "invoiceView",
   data() {
     return {
-      currentInvoice: null,
+      currentInvoice: {},
     };
   },
   created() {
     this.getCurrentInvoice();
   },
   methods: {
-    ...mapMutations(["SET_CURRENT_INVOICE", "TOGGLE_EDIT_INVOICE", "TOGGLE_INVOICE"]),
+    ...mapMutations([
+      "SET_CURRENT_INVOICE",
+      "TOGGLE_EDIT_INVOICE",
+      "TOGGLE_INVOICE",
+    ]),
+    ...mapActions([
+      "DELETE_INVOICE",
+      "UPDATE_STATUS_TO_PAID",
+      "UPDATE_STATUS_TO_PENDING",
+    ]),
     getCurrentInvoice() {
       this.SET_CURRENT_INVOICE(this.$route.params.invoiceId);
       this.currentInvoice = this.currentInvoiceArray[0];
     },
-    toggleEditInvoice(){
-        this.TOGGLE_EDIT_INVOICE();
-        this.TOGGLE_INVOICE();
-    }
+    toggleEditInvoice() {
+      this.TOGGLE_EDIT_INVOICE();
+      this.TOGGLE_INVOICE();
+    },
+    async deleteInvoice(docId) {
+      await this.DELETE_INVOICE(docId);
+      this.$router.push({ name: "Home" });
+    },
+    updateStatusToPaid(docId) {
+      this.UPDATE_STATUS_TO_PAID(docId);
+    },
+    updateStatusToPending(docId) {
+      this.UPDATE_STATUS_TO_PENDING(docId);
+    },
   },
   computed: {
-    ...mapState(["currentInvoiceArray"]),
+    ...mapState(["currentInvoiceArray", "editInvoice"]),
+  },
+  watch: {
+    editInvoice() {
+      if (!this.editInvoice) {
+        console.log(this.currentInvoiceArray[0]);
+        this.currentInvoice = this.currentInvoiceArray[0];
+      }
+    },
   },
 };
 </script>
@@ -284,42 +306,42 @@ export default {
         }
 
         .item {
-            margin-bottom: 32px;
-            font-size: 13px;
-            color: #fff;
+          margin-bottom: 32px;
+          font-size: 13px;
+          color: #fff;
 
-            &:last-child {
-                margin-bottom: 0px;
-            }
+          &:last-child {
+            margin-bottom: 0px;
+          }
 
-            p:first-child {
-                flex: 3;
-                text-align: left;
-            }
+          p:first-child {
+            flex: 3;
+            text-align: left;
+          }
 
-            p {
-                flex: 1;
-                text-align: right;
-            }
+          p {
+            flex: 1;
+            text-align: right;
+          }
         }
       }
 
       .total {
-          color: #fff;
-          padding: 32px;
-          background-color: rgba(12, 14, 22, 0.7);
-          align-items: center;
-          border-radius: 0 0 20px 20px;
+        color: #fff;
+        padding: 32px;
+        background-color: rgba(12, 14, 22, 0.7);
+        align-items: center;
+        border-radius: 0 0 20px 20px;
 
-          p {
-              flex: 1;
-              font-size: 12px;
-          }
+        p {
+          flex: 1;
+          font-size: 12px;
+        }
 
-          p:nth-child(2){
-              font-size: 28px;
-              text-align: right;
-          }
+        p:nth-child(2) {
+          font-size: 28px;
+          text-align: right;
+        }
       }
     }
   }
