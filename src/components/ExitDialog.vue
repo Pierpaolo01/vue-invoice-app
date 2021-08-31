@@ -11,11 +11,11 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapMutations, mapState } from "vuex";
 export default {
   name: "dialog",
   methods: {
-    ...mapMutations(["TOGGLE_DIALOG", "TOGGLE_INVOICE"]),
+    ...mapMutations(["TOGGLE_DIALOG", "TOGGLE_INVOICE", "TOGGLE_EDIT_INVOICE"]),
 
     closeDialog() {
       this.TOGGLE_DIALOG();
@@ -23,7 +23,13 @@ export default {
     closeInvoice(){
         this.TOGGLE_DIALOG();
         this.TOGGLE_INVOICE();
+        if(this.editInvoice){
+          this.TOGGLE_EDIT_INVOICE();
+        }
     },
+  },
+  computed:{
+    ...mapState(["editInvoice"]),
   },
 };
 </script>

@@ -1,4 +1,5 @@
 <template>
+<!-- Header -->
   <div class="home container">
     <header class="header flex">
       <div class="left flex flex-column">
@@ -25,15 +26,27 @@
         </div>
       </div>
     </header>
+  <div v-if="invoiceData.length > 0">
+    <InvoiceItem v-for="(invoice, index) in invoiceData" :invoiceItem="invoice" :key="index"/>
   </div>
+  <div v-else class="empty flex flex-column" >
+    <img src="@/assets/illustration-empty.svg" alt="empty">
+    <h3>There is nothing here</h3>
+    <p>Create a new invoice by clicking the 'New Invoice' button and get started</p>
+  </div>
+  </div>
+  <!-- Invoices -->
 </template>
 
 <script>
-import {mapMutations} from "vuex";
+import {mapMutations, mapState} from "vuex";
+import InvoiceItem from "../components/InvoiceItem";
 
 export default {
   name: "Home",
-  components: {},
+  components: {
+    InvoiceItem,
+  },
   data() {
     return {
       filterMenu: false,
@@ -50,6 +63,9 @@ export default {
       this.filterMenu = !this.filterMenu;
     }
   },
+  computed: {
+    ...mapState(["invoiceData"]),
+  }
 };
 </script>
 
@@ -129,6 +145,28 @@ export default {
           }
         }
       }
+    }
+  }
+
+  .empty {
+    margin-top: 160px;
+    align-items: center;
+
+    img {
+      width: 214px;
+      height: 200px;
+    }
+
+    h3 {
+      font-size: 20px;
+      margin-top: 40px;
+    }
+
+    p {
+      text-align: center;
+      max-width: 224px;
+      font-weight: 300;
+      margin-top: 16px;
     }
   }
 }

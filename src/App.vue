@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="invoicesLoaded">
     <div class="app flex flex-column">
       <TheNavigation />
       <div class="app-content flex flex-column">
@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions} from "vuex";
 import TheNavigation from "./components/TheNavigation";
 import InvoiceModal from "./components/InvoiceModal";
 import ExitDialog from "./components/ExitDialog";
@@ -25,9 +25,15 @@ export default {
     InvoiceModal,
     ExitDialog,
   },
-  computed: {
-    ...mapState(["invoiceModal", "dialogActive"]),
+  methods:{
+    ...mapActions(["GET_INVOICES"]),
   },
+  computed: {
+    ...mapState(["invoiceModal", "dialogActive", "invoicesLoaded"]),
+  },
+  created(){
+    this.GET_INVOICES();
+  }
 };
 </script>
 
