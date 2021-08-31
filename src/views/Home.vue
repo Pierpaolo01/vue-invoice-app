@@ -4,17 +4,17 @@
     <header class="header flex">
       <div class="left flex flex-column">
         <h1>invoices</h1>
-        <span>There are 4 invoices here</span>
+        <span>There are {{invoiceData.length}} invoices here</span>
       </div>
       <div class="right flex">
         <div @click="toggleFilterMenu" class="filter flex">
           <span>Filter by status</span>
           <img src="../assets/icon-arrow-down.svg" alt="arrow-down" />
           <ul v-show="filterMenu" class="filter-menu">
-            <li>Draft</li>
-            <li>Pending</li>
-            <li>Paid</li>
-            <li>All</li>
+            <li @click="filteredInvoice">Draft</li>
+            <li @click="filteredInvoice">Pending</li>
+            <li @click="filteredInvoice">Paid</li>
+            <li @click="filteredInvoice">All</li>
           </ul>
         </div>
         <div @click="newInvoice" class="button flex">
@@ -61,7 +61,10 @@ export default {
 
     toggleFilterMenu() {
       this.filterMenu = !this.filterMenu;
-    }
+    },
+    filteredInvoice(){
+
+    }, 
   },
   computed: {
     ...mapState(["invoiceData"]),
