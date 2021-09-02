@@ -323,7 +323,7 @@ export default {
 
       const database = DB.collection("invoices").doc();
 
-      this.invoiceDraft = true;
+      // this.invoiceDraft = true;
 
       await database.set({
         invoiceId: uid(6),
