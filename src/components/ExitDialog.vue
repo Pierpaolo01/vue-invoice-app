@@ -20,6 +20,7 @@ export default {
     closeDialog() {
       this.TOGGLE_DIALOG();
     },
+    //closesModal
     closeInvoice(){
         this.TOGGLE_DIALOG();
         this.TOGGLE_INVOICE();
