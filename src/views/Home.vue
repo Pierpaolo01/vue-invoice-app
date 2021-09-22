@@ -88,7 +88,6 @@ export default {
     checkScreen() {
       if (window.innerWidth <= 600) {
         this.isMobile = true;
-        console.log(this.isMobile);
 
         return;
       }
