@@ -91,7 +91,7 @@ export default {
 
         return;
       }
-      console.log(this.isMobile);
+      
       this.isMobile = false;
     },
   },

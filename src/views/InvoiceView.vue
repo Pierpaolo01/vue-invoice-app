@@ -153,7 +153,6 @@ export default {
   watch: {
     editInvoice() {
       if (!this.editInvoice) {
-        console.log(this.currentInvoiceArray[0]);
         this.currentInvoice = this.currentInvoiceArray[0];
       }
     },
