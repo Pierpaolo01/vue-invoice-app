@@ -1,14 +1,21 @@
 <template>
-<!-- Header -->
+  <!-- Header -->
   <div class="home container">
     <header class="header flex">
       <div class="left flex flex-column">
         <h1>invoices</h1>
-        <span>There are {{invoiceData.length}} invoices here</span>
+        <span v-if="isMobile"> {{ invoiceData.length }} Invoices </span>
+        <span v-else>There are {{ invoiceData.length }} invoices here</span>
       </div>
       <div class="right flex">
         <div @click="toggleFilterMenu" class="filter flex">
-          <span>Filter by status <span v-if="isFilteredInvoice">: {{isFilteredInvoice}} </span></span>
+          <span>
+            <p v-if="isMobile">Filter</p>
+            <p v-else>Filter by status</p>
+            <span v-if="isFilteredInvoice"
+              >: {{ isFilteredInvoice }}
+            </span></span
+          >
           <img src="../assets/icon-arrow-down.svg" alt="arrow-down" />
           <ul v-show="filterMenu" class="filter-menu">
             <li @click="filteredInvoice">Draft</li>
@@ -21,25 +28,32 @@
           <div class="inner-button flex">
             <img src="../assets/icon-plus.svg" alt="new-invoice" />
           </div>
-
-          <span>New Invoice</span>
+          <span v-if="isMobile">New</span>
+          <span v-else>New Invoice</span>
         </div>
       </div>
     </header>
-  <div v-if="invoiceData.length > 0">
-    <InvoiceItem v-for="(invoice, index) in filteredData" :invoiceItem="invoice" :key="index"/>
-  </div>
-  <div v-else class="empty flex flex-column" >
-    <img src="@/assets/illustration-empty.svg" alt="empty">
-    <h3>There is nothing here</h3>
-    <p>Create a new invoice by clicking the 'New Invoice' button and get started</p>
-  </div>
+    <div v-if="invoiceData.length > 0">
+      <InvoiceItem
+        v-for="(invoice, index) in filteredData"
+        :invoiceItem="invoice"
+        :key="index"
+      />
+    </div>
+    <div v-else class="empty flex flex-column">
+      <img src="@/assets/illustration-empty.svg" alt="empty" />
+      <h3>There is nothing here</h3>
+      <p>
+        Create a new invoice by clicking the 'New Invoice' button and get
+        started
+      </p>
+    </div>
   </div>
   <!-- Invoices -->
 </template>
 
 <script>
-import {mapMutations, mapState} from "vuex";
+import { mapMutations, mapState } from "vuex";
 import InvoiceItem from "../components/InvoiceItem";
 
 export default {
@@ -51,11 +65,12 @@ export default {
     return {
       filterMenu: false,
       isFilteredInvoice: null,
+      isMobile: null,
     };
   },
   methods: {
-    ...mapMutations(['TOGGLE_INVOICE']),
-    
+    ...mapMutations(["TOGGLE_INVOICE"]),
+
     newInvoice() {
       this.TOGGLE_INVOICE();
     },
@@ -63,29 +78,43 @@ export default {
     toggleFilterMenu() {
       this.filterMenu = !this.filterMenu;
     },
-    filteredInvoice(event){
-      if(event.target.innerText === "all"){
+    filteredInvoice(event) {
+      if (event.target.innerText === "all") {
         this.isFilteredInvoice = null;
         return;
       }
       this.isFilteredInvoice = event.target.innerText;
-    }, 
+    },
+    checkScreen() {
+      if (window.innerWidth <= 600) {
+        this.isMobile = true;
+        console.log(this.isMobile);
+
+        return;
+      }
+      console.log(this.isMobile);
+      this.isMobile = false;
+    },
   },
   computed: {
     ...mapState(["invoiceData"]),
-    filteredData(){
-      return this.invoiceData.filter(invoice => {
-        if(this.isFilteredInvoice === "Draft"){
+    filteredData() {
+      return this.invoiceData.filter((invoice) => {
+        if (this.isFilteredInvoice === "Draft") {
           return invoice.invoiceDraft === true;
-        }else if(this.isFilteredInvoice === "Pending"){
+        } else if (this.isFilteredInvoice === "Pending") {
           return invoice.invoicePending === true;
-        }else if(this.isFilteredInvoice === "Paid"){
+        } else if (this.isFilteredInvoice === "Paid") {
           return invoice.invoicePaid === true;
-        } 
+        }
         return invoice;
       });
     },
-  }
+  },
+  created() {
+    this.checkScreen();
+    window.addEventListener("resize", this.checkScreen);
+  },
 };
 </script>
 
@@ -118,6 +147,9 @@ export default {
         cursor: pointer;
         position: relative;
         margin-right: 40px;
+        @media screen and (max-width: 600px){
+          margin-right: 10px;
+        }
 
         img {
           margin-left: 12px;

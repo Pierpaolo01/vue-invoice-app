@@ -43,12 +43,14 @@ export default {
   align-items: center;
   height: 100vh;
   width: 100%;
-  .dialog-content {
+ 
+  .dialog-content { 
     border-radius: 20px;
     padding: 48px 32px;
     max-width: 450px;
     background-color: #252945;
     color: #fff;
+
     p {
       text-align: center;
     }

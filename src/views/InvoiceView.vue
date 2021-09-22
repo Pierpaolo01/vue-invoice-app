@@ -179,6 +179,9 @@ export default {
   .invoice-details {
     background-color: #1e2139;
     border-radius: 20px;
+    @media screen and (max-width: 600px) {
+      flex-direction: column;
+    }
   }
 
   .header {
@@ -187,7 +190,9 @@ export default {
     font-size: 12px;
     .left {
       align-items: center;
-
+      @media screen and (max-width: 600px) {
+        padding-bottom: 15px;
+      }
       span {
         color: #dfe3fa;
       }
@@ -201,6 +206,7 @@ export default {
       }
     }
   }
+
 
   .invoice-details {
     padding: 48px;
